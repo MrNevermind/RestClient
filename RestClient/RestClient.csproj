@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Mr. Nevermind</Authors>
     <Company />
+    <PackageId>MrNevermind.RestClient</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
