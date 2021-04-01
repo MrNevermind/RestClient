@@ -5,6 +5,7 @@
     <Authors>Mr. Nevermind</Authors>
     <Company />
     <PackageId>MrNevermind.RestClient</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
