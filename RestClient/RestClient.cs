@@ -12,9 +12,11 @@ namespace RestClient
     {
 
         private readonly string endpoint;
+        private static HttpClient httpClient { get; set; }
         public RestClient(string endpoint)
         {
             this.endpoint = endpoint;
+            httpClient = new HttpClient();
         }
 
         public static RestClient CreateClient(string endpoint)
@@ -25,106 +27,94 @@ namespace RestClient
         #region Base
         public async Task ExecuteAsync(string url, HttpMethod method, object body = null)
         {
-            using (var client = new HttpClient())
-            {
-                using (
-                    HttpRequestMessage request = new HttpRequestMessage
-                    {
-                        Method = method,
-                        RequestUri = new Uri($"{endpoint}/{url}")
-                    })
+            using (
+                HttpRequestMessage request = new HttpRequestMessage
                 {
+                    Method = method,
+                    RequestUri = new Uri($"{endpoint}/{url}")
+                })
+            {
 
-                    if (body != null)
-                    {
-                        request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, new ContentType("application/json").MediaType);
-                    }
-
-                    var response = await client.SendAsync(request).ConfigureAwait(false);
-
-                    if (response.Content == null || response.StatusCode != HttpStatusCode.OK)
-                        throw new ApplicationException($"Error executing: {method} {endpoint}/{url}", new Exception($"Status code: {response.StatusCode}"));
+                if (body != null)
+                {
+                    request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, new ContentType("application/json").MediaType);
                 }
+
+                var response = await httpClient.SendAsync(request).ConfigureAwait(false);
+
+                if (response.Content == null || response.StatusCode != HttpStatusCode.OK)
+                    throw new ApplicationException($"Error executing: {method} {endpoint}/{url}", new Exception($"Status code: {response.StatusCode}"));
             }
         }
 
         public async Task<T> ExecuteAsync<T>(string url, HttpMethod method, object body = null)
         {
-            using (var client = new HttpClient())
-            {
-                using (
-                    HttpRequestMessage request = new HttpRequestMessage
-                    {
-                        Method = method,
-                        RequestUri = new Uri($"{endpoint}/{url}")
-                    })
+            using (
+                HttpRequestMessage request = new HttpRequestMessage
                 {
+                    Method = method,
+                    RequestUri = new Uri($"{endpoint}/{url}")
+                })
+            {
 
-                    if (body != null)
-                    {
-                        request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, new ContentType("application/json").MediaType);
-                    }
-
-                    var response = await client.SendAsync(request).ConfigureAwait(false);
-
-                    if (response.Content == null || response.StatusCode != HttpStatusCode.OK)
-                        throw new ApplicationException($"Error executing: {method} {endpoint}/{url}", new Exception($"Status code: {response.StatusCode}"));
-
-                    var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    return JsonConvert.DeserializeObject<T>(responseBody);
+                if (body != null)
+                {
+                    request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, new ContentType("application/json").MediaType);
                 }
+
+                var response = await httpClient.SendAsync(request).ConfigureAwait(false);
+
+                if (response.Content == null || response.StatusCode != HttpStatusCode.OK)
+                    throw new ApplicationException($"Error executing: {method} {endpoint}/{url}", new Exception($"Status code: {response.StatusCode}"));
+
+                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return JsonConvert.DeserializeObject<T>(responseBody);
             }
         }
 
         public void Execute(string url, HttpMethod method, object body = null)
         {
-            using (var client = new HttpClient())
-            {
-                using (
-                    HttpRequestMessage request = new HttpRequestMessage
-                    {
-                        Method = method,
-                        RequestUri = new Uri($"{endpoint}/{url}")
-                    })
+            using (
+                HttpRequestMessage request = new HttpRequestMessage
                 {
+                    Method = method,
+                    RequestUri = new Uri($"{endpoint}/{url}")
+                })
+            {
 
-                    if (body != null)
-                    {
-                        request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, new ContentType("application/json").MediaType);
-                    }
-
-                    var response = client.SendAsync(request).GetAwaiter().GetResult();
-
-                    if (response.Content == null || response.StatusCode != HttpStatusCode.OK)
-                        throw new ApplicationException($"Error executing: {method} {endpoint}/{url}", new Exception($"Status code: {response.StatusCode}"));
+                if (body != null)
+                {
+                    request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, new ContentType("application/json").MediaType);
                 }
+
+                var response = httpClient.SendAsync(request).GetAwaiter().GetResult();
+
+                if (response.Content == null || response.StatusCode != HttpStatusCode.OK)
+                    throw new ApplicationException($"Error executing: {method} {endpoint}/{url}", new Exception($"Status code: {response.StatusCode}"));
             }
         }
         public T Execute<T>(string url, HttpMethod method, object body = null)
         {
-            using (var client = new HttpClient())
-            {
-                using (
-                    HttpRequestMessage request = new HttpRequestMessage
-                    {
-                        Method = method,
-                        RequestUri = new Uri($"{endpoint}/{url}")
-                    })
+            using (
+                HttpRequestMessage request = new HttpRequestMessage
                 {
+                    Method = method,
+                    RequestUri = new Uri($"{endpoint}/{url}")
+                })
+            {
 
-                    if (body != null)
-                    {
-                        request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, new ContentType("application/json").MediaType);
-                    }
-
-                    var response = client.SendAsync(request).GetAwaiter().GetResult();
-
-                    if (response.Content == null || response.StatusCode != HttpStatusCode.OK)
-                        throw new ApplicationException($"Error executing: {method} {endpoint}/{url}", new Exception($"Status code: {response.StatusCode}"));
-
-                    var responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                    return JsonConvert.DeserializeObject<T>(responseBody);
+                if (body != null)
+                {
+                    request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, new ContentType("application/json").MediaType);
                 }
+
+                var response = httpClient.SendAsync(request).GetAwaiter().GetResult();
+
+                if (response.Content == null || response.StatusCode != HttpStatusCode.OK)
+                    throw new ApplicationException($"Error executing: {method} {endpoint}/{url}", new Exception($"Status code: {response.StatusCode}"));
+
+                var responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JsonConvert.DeserializeObject<T>(responseBody);
             }
         }
         #endregion
